@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $SCRIPT_ROOT = {{ request.script_root|tojson }};
+    </script>
+    <style>
+        .letter_input{
+            width: 40px;
+            height: 40px;
+            border: solid grey 2px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yo</h1>
+    <p id="result">{{ fill }}</p>
+    <div id="game_board">
+    </div>
+
+    <button id="new_word">New Word</button>
+    <button id="try_word">Try</button>
+    <div id="keyboard">
+
+    </div>
+
+<script>
+    $(function() {
+        $('#new_word').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/new_word',
+            function(data) {
+                $("#result").text(data.result);
+            });
+            return false;
+        });
+        $('#try_word').bind('click', function() {
+            $.post($SCRIPT_ROOT + '/try_word',
+                function(data) {
+                    $("#result").text(data.result);
+                });
+            return false;
+        });
+        
+    });
+    let generate_board = () => {
+        $("#game_board").empty();
+        for (let i = 0; i <= 5; i++){
+            $("#game_board").append(`<div id="word_input-${i}" class="word_input" name="${i}"></div>`);
+            for (let j = 0; j <= 5; j++){
+                $(`#word_input-${i}`).append(`<div class="letter_input" name="${j}"></div>`);
+            }
+        }
+        console.log("hello");
+        
+    };
+    let keyboard_keys = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+
+    let generate_keyboard = () => {
+        $("#keyboard").empty();
+        for (let i = 0; i <= keyboard_keys.length; i++){
+            console.log(keyboard_keys[i]);
+        }
+    }
+
+    generate_board();
+    generate_keyboard();
+    
+    
+
+
+</script>
+
+</body>
+</html>
