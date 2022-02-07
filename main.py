@@ -7,11 +7,12 @@ app.secret_key = os.environ.get("SECRET_KEY", "somesecret")
 
 @app.route('/try_word', methods=["POST"])
 def try_word():
-    return jsonify(result="Something was sent and recieved?")
+    print(request.form["word"])
+    return jsonify(result="The server received the word"+request.form["word"])
 
 @app.route('/new_word')
 def new_word():
-    session["word"] = word_new(4)
+    session["word"] = word_new(5)
     return jsonify(result=session["word"])
 
 @app.route('/')
@@ -20,7 +21,7 @@ def index():
         fill = 'Your word is ' + session["word"]
         return render_template("index.html", fill=fill)
     else:
-        session["word"] = word_new(4)
+        session["word"] = word_new(5)
         return "First Timer? - Getting you a new word"
     
 
