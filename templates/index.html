@@ -93,12 +93,20 @@
                 $(`#li${attempt}${letter_index}`).text(letter);
                 letter_index++;
             }
-            console.log(letter_index, num_letters)
+            console.log(letter_index, num_letters, attempt)
         }
 
         function clear_line(line = attempt) {
             $(`#word_input-${line} .letter_input`).text("");
             letter_index = 0;
+        }
+
+        function last_letter() {
+            if (letter_index > 0) {
+                letter_index--;
+                $(`#li${attempt}${letter_index}`).text("");
+            }
+
         }
 
         function get_word() {
@@ -110,9 +118,11 @@
         }
 
         function paintCells(result, word_attempt) {
+            console.log(attempt)
             for (let i = 0; i < result.length; i++) {
                 $(`#li${attempt}${i}`).addClass(result[i]);
-                console.log(word_attempt)
+                console.log(word_attempt);
+                console.log(`#li${attempt}${i}`);
                 $(`.keyboard_key[value='${word_attempt[i]}']`).addClass("used")
             }
         }
@@ -127,9 +137,12 @@
                     if (data.validated) {
                         wordsent = "";
                         paintCells(data.result, word_attempt);
-                        $("#result").text(data.result);
+                        $("#result").text("Result for " + word_attempt);
                         attempt++;
                         letter_index = 0;
+                    }
+                    else {
+                        $("#result").text(word_attempt + " is not a valid word");
                     }
                 });
             }
@@ -137,10 +150,17 @@
         }
         // $(function () {
         $('#new_word').bind('click', function () {
-            $.getJSON($SCRIPT_ROOT + '/new_word',
-                function (data) {
-                    $("#result").text(data.result);
-                });
+            $.post($SCRIPT_ROOT + '/new_word', {
+                function(data) {
+                    $("#result").text("You received a new word!");
+                    attempt = 0;
+                    letter_index = 0;
+                    generate_board();
+                    generate_keyboard();
+
+                }
+            });
+
             return false;
         });
 
@@ -190,10 +210,16 @@
             });
 
             $('#enter').bind('click', function () {
-
                 try_word();
                 return false;
             });
+
+            $('#back').bind('click', function () {
+
+                last_letter();
+                return false;
+            });
+
             $('#clear').bind('click', function () {
 
                 clear_line();
@@ -213,7 +239,17 @@
                 enter_letter(letter_in.toLocaleUpperCase())
             }
             else if (keydown == 13) {
+                event.preventDefault();
+                $('#enter').focus();
                 try_word();
+
+            } else if (keydown == 46) {
+                clear_line();
+
+            }
+            else if (keydown == 8) {
+                last_letter();
+
             }
 
         });

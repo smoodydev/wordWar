@@ -15,21 +15,18 @@ def try_word():
     else:
         return jsonify(validated=False, result="Not a Valid Word")
 
-@app.route('/new_word')
+@app.route('/new_word', methods=["POST"])
 def new_word():
     session["word"] = word_new(5)
     session["letters"] = 5
-    return jsonify(result=session["word"])
+    return jsonify(result="Success")
 
 @app.route('/')
 def index():
-    if "word" in session:
-        fill = 'Your word is ' + session["word"]
-        return render_template("index.html", fill=fill)
-    else:
+    if "word" not in session:
         session["word"] = word_new(5)
         session["letters"] = 5
-        return "First Timer? - Getting you a new word"
+    return render_template("index.html")
     
 
 
