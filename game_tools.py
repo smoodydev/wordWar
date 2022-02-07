@@ -22,9 +22,9 @@ def try_solve(word, attempt):
     for i, l in enumerate(attempt):
         if l in word:
             if l == word[i]:
-                stringback += "Y"
+                stringback += "y"
             else:
-                stringback += "C"
+                stringback += "c"
         else:
-            stringback += "N"
+            stringback += "n"
     return stringback

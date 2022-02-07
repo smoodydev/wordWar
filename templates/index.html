@@ -22,6 +22,11 @@
             align-items: center;
         }
 
+        .word_input {
+            display: flex;
+            justify-content: center;
+        }
+
         .keyboard_row {
             display: flex;
             justify-content: center;
@@ -41,17 +46,36 @@
             width: 60px;
             height: 40px;
         }
+
+        .y {
+            background-color: greenyellow;
+        }
+
+        .c {
+            background-color: yellow;
+        }
+
+        .n {
+            background-color: lightslategray;
+        }
+
+        .used {
+            background-color: grey;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <h1>Yo</h1>
-    <p id="result">{{ fill }}</p>
+    <button id="new_word">New Word</button>
+    <p id="result"></p>
     <div id="game_board">
     </div>
+    <br>
+    <br>
 
-    <button id="new_word">New Word</button>
-    <button id="try_word">Try</button>
+
     <div id="keyboard">
 
     </div>
@@ -63,12 +87,18 @@
         let letter_index = 0;
 
 
+
         function enter_letter(letter) {
             if (letter_index < num_letters) {
                 $(`#li${attempt}${letter_index}`).text(letter);
                 letter_index++;
             }
             console.log(letter_index, num_letters)
+        }
+
+        function clear_line(line = attempt) {
+            $(`#word_input-${line} .letter_input`).text("");
+            letter_index = 0;
         }
 
         function get_word() {
@@ -79,6 +109,32 @@
             return word_attempt;
         }
 
+        function paintCells(result, word_attempt) {
+            for (let i = 0; i < result.length; i++) {
+                $(`#li${attempt}${i}`).addClass(result[i]);
+                console.log(word_attempt)
+                $(`.keyboard_key[value='${word_attempt[i]}']`).addClass("used")
+            }
+        }
+
+
+        function try_word() {
+            let word_attempt = get_word().toLocaleLowerCase();
+            if (word_attempt.length == num_letters) {
+                $.post($SCRIPT_ROOT + '/try_word', {
+                    word: word_attempt
+                }, function (data) {
+                    if (data.validated) {
+                        wordsent = "";
+                        paintCells(data.result, word_attempt);
+                        $("#result").text(data.result);
+                        attempt++;
+                        letter_index = 0;
+                    }
+                });
+            }
+
+        }
         // $(function () {
         $('#new_word').bind('click', function () {
             $.getJSON($SCRIPT_ROOT + '/new_word',
@@ -87,20 +143,9 @@
                 });
             return false;
         });
-        $('#try_word').bind('click', function () {
-            let word_attempt = get_word();
-            if (word_attempt.length == num_letters) {
-                $.post($SCRIPT_ROOT + '/try_word', {
-                    word: word_attempt
-                }, function (data) {
-                    let wordsent = "";
 
-                    $("#result").text(data.result);
-                });
-            }
 
-            return false;
-        });
+
 
         // });
 
@@ -144,7 +189,16 @@
                 enter_letter($(this).val().toLocaleUpperCase())
             });
 
+            $('#enter').bind('click', function () {
 
+                try_word();
+                return false;
+            });
+            $('#clear').bind('click', function () {
+
+                clear_line();
+                return false;
+            });
 
 
         }
@@ -157,6 +211,9 @@
             if (keydown >= 65 && keydown <= 90) {
                 let letter_in = String.fromCharCode(keydown)
                 enter_letter(letter_in.toLocaleUpperCase())
+            }
+            else if (keydown == 13) {
+                try_word();
             }
 
         });

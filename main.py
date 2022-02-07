@@ -11,9 +11,9 @@ def try_word():
 
     if is_valid_word(word, session["letters"]):
         result = try_solve(session["word"], word)
-        return jsonify(result=result+ " The server received the word "+request.form["word"])
+        return jsonify(validated=True, result=result, text="The server received the word "+request.form["word"])
     else:
-        return jsonify(result="Not a Valid Word")
+        return jsonify(validated=False, result="Not a Valid Word")
 
 @app.route('/new_word')
 def new_word():
