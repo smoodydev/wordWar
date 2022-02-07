@@ -1,0 +1,52 @@
+.letter_input {
+    width: 40px;
+    height: 40px;
+    border: solid grey 2px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+}
+
+.word_input {
+    display: flex;
+    justify-content: center;
+}
+
+.keyboard_row {
+    display: flex;
+    justify-content: center;
+}
+
+.keyboard_row button {
+    margin: 2px;
+}
+
+.keyboard_key {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.keyboard_action {
+    width: 60px;
+    height: 40px;
+}
+
+.y {
+    background-color: greenyellow;
+}
+
+.c {
+    background-color: yellow;
+}
+
+.n {
+    background-color: lightslategray;
+}
+
+.used {
+    background-color: grey;
+    color: white;
+}
