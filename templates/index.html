@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,17 +8,35 @@
     <title>Document</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $SCRIPT_ROOT = {{ request.script_root|tojson }};
+        $SCRIPT_ROOT = {{ request.script_root | tojson }};
     </script>
     <style>
-        .letter_input{
+        .letter_input {
             width: 40px;
             height: 40px;
             border: solid grey 2px;
             display: inline-block;
         }
+        .keyboard_row{
+            display: flex;
+            justify-content:center;
+        }
+
+        .keyboard_row button{
+            margin: 2px;
+        }
+        .keyboard_key{
+            width: 40px;
+            height: 40px;
+            padding: 0;
+        }
+        .keyboard_action {
+        width: 60px;
+        height: 40px;
+    }
     </style>
 </head>
+
 <body>
     <h1>Yo</h1>
     <p id="result">{{ fill }}</p>
@@ -30,51 +49,64 @@
 
     </div>
 
-<script>
-    $(function() {
-        $('#new_word').bind('click', function() {
-            $.getJSON($SCRIPT_ROOT + '/new_word',
-            function(data) {
-                $("#result").text(data.result);
+    <script>
+        $(function () {
+            $('#new_word').bind('click', function () {
+                $.getJSON($SCRIPT_ROOT + '/new_word',
+                    function (data) {
+                        $("#result").text(data.result);
+                    });
+                return false;
             });
-            return false;
+            $('#try_word').bind('click', function () {
+                $.post($SCRIPT_ROOT + '/try_word',
+                    function (data) {
+                        $("#result").text(data.result);
+                    });
+                return false;
+            });
+
         });
-        $('#try_word').bind('click', function() {
-            $.post($SCRIPT_ROOT + '/try_word',
-                function(data) {
-                    $("#result").text(data.result);
-                });
-            return false;
-        });
-        
-    });
-    let generate_board = () => {
-        $("#game_board").empty();
-        for (let i = 0; i <= 5; i++){
-            $("#game_board").append(`<div id="word_input-${i}" class="word_input" name="${i}"></div>`);
-            for (let j = 0; j <= 5; j++){
-                $(`#word_input-${i}`).append(`<div class="letter_input" name="${j}"></div>`);
+        let generate_board = () => {
+            $("#game_board").empty();
+            for (let i = 0; i <= 5; i++) {
+                $("#game_board").append(`<div id="word_input-${i}" class="word_input" name="${i}"></div>`);
+                for (let j = 0; j <= 5; j++) {
+                    $(`#word_input-${i}`).append(`<div class="letter_input" name="${j}"></div>`);
+                }
             }
+            console.log("hello");
+
+        };
+        let keyboard_keys = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+
+        let generate_keyboard = () => {
+            $("#keyboard").empty();
+            
+            for (let i = 0; i < keyboard_keys.length; i++) {
+                $("#keyboard").append(`<div id="keyboard_row-${i}" class="keyboard_row"></div>`);
+                for (let j = 0; j < keyboard_keys[i].length; j++) {
+                    $(`#keyboard_row-${i}`).append(`<button class="keyboard_key">${keyboard_keys[i][j].toUpperCase()}</button>`);
+
+                }
+            }
+            $("#keyboard").append(`
+                <div class="keyboard_row">
+                    <button id="clear" class="keyboard_action">Clear</button>
+                    <button id="back" class="keyboard_action">Back</button>
+                    <button id="enter" class="keyboard_action">Enter</button>
+                </div>`);
+            
         }
-        console.log("hello");
-        
-    };
-    let keyboard_keys = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
 
-    let generate_keyboard = () => {
-        $("#keyboard").empty();
-        for (let i = 0; i <= keyboard_keys.length; i++){
-            console.log(keyboard_keys[i]);
-        }
-    }
-
-    generate_board();
-    generate_keyboard();
-    
-    
+        generate_board();
+        generate_keyboard();
 
 
-</script>
+
+
+    </script>
 
 </body>
+
 </html>
