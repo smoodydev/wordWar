@@ -1,32 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $SCRIPT_ROOT = {{ request.script_root | tojson }};
-    </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-
-<body>
+{% extends "base.html" %}
+{% block content %}
     <h1>Yo</h1>
     <button id="new_word">New Word</button>
     <p id="result"></p>
     <div id="game_board">
     </div>
-    <br>
-    <br>
-
-
+  
     <div id="keyboard">
-
     </div>
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
-</body>
+{% endblock %}
 
-</html>
+
+{% block post_js %}
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+
+{% block content%}
+
+<h2>Sign Up a New User</h2>
+
+<div class="row">
+    <form class="col-8 offset-2" action="{{ url_for('sign_up') }}" method="POST">
+        <div >
+        
+            <label class="col-4" for="username">Username</label> 
+  
+   
+            <input class="col-sm-12"  id="username" name="username" type="text" class="validate">
+    
+            <label for="email">Email</label>
+            <input class="col-sm-12" id="email" name="email" type="email" class="validate">
+            <label for="password1">Password</label>
+            <input class="col-sm-12" id="password1" name="password1" type="password" class="validate">
+            <label for="password2">Repeat Password</label>
+            <input class="col-sm-12" id="password2" name="password2" type="password" class="validate">
+            <hr>
+            <button class="col-4 offset-4" type="submit">Submit
+            </button>
+       
+    </div>
+    </form>
+</div>
+{% endblock %}
