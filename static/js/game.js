@@ -46,7 +46,7 @@ function paintCells(result, word_attempt) {
         $(`#li${attempt}${i}`).addClass(result[i]);
         console.log(word_attempt);
         console.log(`#li${attempt}${i}`);
-        $(`.keyboard_key[value='${word_attempt[i]}']`).addClass("used")
+        $(`.keyboard_key[value='${word_attempt[i]}']`).addClass(result[i])
     }
 }
 

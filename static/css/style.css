@@ -39,19 +39,16 @@
     height: 40px;
 }
 
-.y {
-    background-color: greenyellow;
-}
 
 .c {
     background-color: yellow;
 }
+.y {
+    background-color: greenyellow;
+}
+
 
 .n {
     background-color: lightslategray;
 }
 
-.used {
-    background-color: grey;
-    color: white;
-}
