@@ -4,8 +4,10 @@ from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from flask import Flask, session, jsonify, render_template, request
 from game_tools import word_new, is_valid_word, try_solve
-if os.path.exists:
+if os.path.exists("env.py"):
     import env
+else:
+    print("not there")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "somesecret")
