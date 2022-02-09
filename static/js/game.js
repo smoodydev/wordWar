@@ -4,6 +4,7 @@ let num_letters = 5;
 let num_attempts = 5;
 let attempt = 0;
 let letter_index = 0;
+let attempt_array = [];
 
 // Base functions for both Keybinds and Fake Keyboard
 
@@ -12,7 +13,6 @@ function enter_letter(letter) {
         $(`#li${attempt}${letter_index}`).text(letter);
         letter_index++;
     }
-    console.log(letter_index, num_letters, attempt)
 }
 
 function clear_line(line = attempt) {
@@ -44,8 +44,6 @@ function paintCells(result, word_attempt) {
     console.log(attempt)
     for (let i = 0; i < result.length; i++) {
         $(`#li${attempt}${i}`).addClass(result[i]);
-        console.log(word_attempt);
-        console.log(`#li${attempt}${i}`);
         $(`.keyboard_key[value='${word_attempt[i]}']`).addClass(result[i])
     }
 }
@@ -63,13 +61,17 @@ function try_word() {
                 $("#result").text("Result for " + word_attempt);
                 attempt++;
                 letter_index = 0;
+                attempt_array.push(data.result);
+                if (data.result == "y".repeat(num_letters)){
+                    alert("You are a Wiener!")
+                    openWinModal();
+                }
             }
             else {
-                $("#result").text(word_attempt + " is not a valid word");
+                $("#result").text(data.text_back);
             }
         });
     }
-
 }
 
 $('#new_word').bind('click', function () {
@@ -99,8 +101,6 @@ let generate_board = () => {
             $(`#word_input-${i}`).append(`<div id="li${i}${j}" class="letter_input" name="${j}"></div>`);
         }
     }
-
-
 };
 
 
@@ -147,9 +147,20 @@ let generate_keyboard = () => {
 
 
 }
-
+let repopulate_attempts = () => {
+    if (prev_attempts.length > 0) {
+        for (let i = 0; i < prev_attempts.length; i++) {
+            for (let j = 0; j < prev_attempts[0][0].length; j++) {
+                $(`#li${i}${j}`).text(prev_attempts[i][0][j].toLocaleUpperCase()).addClass(prev_attempts[i][1][j]);
+            }
+            attempt++;
+        }
+        
+    }
+};
 generate_board();
 generate_keyboard();
+repopulate_attempts();
 
 $("body").keydown(function (event) {
     let keydown = event.which;

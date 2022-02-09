@@ -19,29 +19,47 @@ mongo = PyMongo(app)
 # ROUTE
 @app.route('/')
 def index():
+    # session["attempts"] = []
     if "word" not in session:
         session["word"] = word_new(5)
+    if "letters" not in session:
         session["letters"] = 5
-    return render_template("index.html")
+    if "attempts" not in session:
+        session["attempts"] = []
+
+    print(session["attempts"])
+    return render_template("index.html", attempts=session["attempts"])
     
-
-
-
 
 @app.route('/try_word', methods=["POST"])
 def try_word():
     word = request.form["word"].lower()
-
-    if is_valid_word(word, session["letters"]):
-        result = try_solve(session["word"], word)
-        return jsonify(validated=True, result=result, text="The server received the word "+request.form["word"])
+    if ("complete" not in session):
+        if is_valid_word(word, session["letters"]): 
+            result = try_solve(session["word"], word)
+            if 'attempts' in session:
+                print(session["attempts"], "blah")
+                attempts = session.get("attempts")
+                attempts.append([word, result])
+                session["attempts"] = attempts
+                text_back = "The server received the word "+request.form["word"]
+                if result == "y"*session["letters"]:
+                    session["complete"] = True
+            else:
+                session["attempts"] = [word]
+            return jsonify(validated=True, result=result, text_back=text_back)
+        else:
+            return jsonify(validated=False, text_back="Not a Valid Word")
     else:
-        return jsonify(validated=False, result="Not a Valid Word")
+        text_back = "You have already completed this word"
+    return jsonify(validated=False, text_back=text_back)
 
 @app.route('/new_word', methods=["POST"])
 def new_word():
     session["word"] = word_new(5)
     session["letters"] = 5
+    session["attempts"] = []
+    session.pop("complete")
     return jsonify(result="Success")
 
 
@@ -49,29 +67,30 @@ def new_word():
 @app.route('/sign_up', methods=["GET", "POST"])
 def sign_up():
     if request.method == "POST":
-        old_password = b"request.form.get('password')"
-        hash_pass = bcrypt.hashpw(old_password, bcrypt.gensalt())
         fields = request.form.to_dict()
-        fields['password'] = hash_pass
+        if fields["password1"] == fields["password2"]:
+            hashing_password = request.form.get('password1').encode('utf-8')
+            fields['password'] = bcrypt.hashpw(hashing_password, bcrypt.gensalt())
+            [fields.pop(key) for key in ['password1', 'password2']]
+        
         mongo.db.useraccount.insert_one(fields)
     return render_template('sign_up.html')
 
 
 @app.route('/login', methods=['POST'])
 def login():
-    unhashed_pwd = b"request.form.get('user_password')"
-    this_user = request.form.get('user_username')
-    
-    if mongo.db.Users.find({"username": this_user}):
-        hashed_pwd = mongo.db.useraccount.find({"Username": this_user}, {"Password": 1, "_id":0 })
-        print(hashed_pwd)
+
+    unhashed_pwd = request.form.get('password').encode('utf-8')
+    this_user = request.form.get('username')
+    if mongo.db.useraccount.find({"username": this_user}):
+        hashed_pwd = mongo.db.useraccount.find_one({"username": this_user})["password"]
+        print(unhashed_pwd, hashed_pwd)
         if bcrypt.checkpw(unhashed_pwd, hashed_pwd):
-            return "FOUND+Hashed"
+            return "Can Log In"
         else:
-            return "FOUND+NOPE"
+            return "Account Found but Wrong Hash/PWD"
     else:
-        
-        return "NOT FOUND"
+        return "No Account Found"
 
 
 

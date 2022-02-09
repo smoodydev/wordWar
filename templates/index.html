@@ -1,13 +1,20 @@
 {% extends "base.html" %}
+{% block pre_js %}
+<script type="text/javascript">
+    let prev_attempts = {{ attempts| safe }};
+</script>
+{% endblock %}
 {% block content %}
-    <h1>Yo</h1>
-    <button id="new_word">New Word</button>
-    <p id="result"></p>
-    <div id="game_board">
-    </div>
-  
-    <div id="keyboard">
-    </div>
+<h1>Yo</h1>
+<button id="new_word">New Word</button>
+<p id="result"></p>
+<div id="game_board">
+</div>
+
+<div id="keyboard">
+</div>
+
+
 {% endblock %}
 
 
