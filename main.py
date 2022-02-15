@@ -19,22 +19,13 @@ mongo = PyMongo(app)
 # ROUTE
 @app.route('/')
 def index():
-    x = 5
-    print(5 if x <= 3 else 7-x)
-    # session["attempts"] = []
-    if "user" in session:
-        print("Shit")
-    else:
-        print("Nahh")
-    print(session["attempts"])
-    if all([key in session for key in ["word","letters", "attempts"]]):
-        print("Something")
-    else:
+    
+    if not all([key in session for key in ["word","letters", "attempts"]]):
         session["word"] = word_new(5)
         session["letters"] = 5
         session["attempts"] = []
 
-    print(session["attempts"])
+
     return render_template("index.html", attempts=session["attempts"])
     
 
