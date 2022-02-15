@@ -91,8 +91,10 @@ def sign_up():
             fields['password'] = bcrypt.hashpw(hashing_password, bcrypt.gensalt())
 
             [fields.pop(key) for key in ['password1', 'password2']]
+            fields["num_words"] = 1
             fields["score"] = 0
             mongo.db.useraccount.insert_one(fields)
+        return redirect(url_for("index"))
     return render_template('sign_up.html')
 
 
@@ -124,7 +126,8 @@ def logout():
 
 @app.route('/leaderboard')
 def leaderboard():
-    top_scores = mongo.db.useraccount.find().sort("score", 1)
+    top_scores = mongo.db.useraccount.find().sort("score", -1).limit(5)
+  
     
     return render_template("leaderboard.html", leaderboard=top_scores)
 

@@ -52,3 +52,12 @@
     background-color: lightslategray;
 }
 
+.score-pos-1{
+    background-color: gold;
+}
+.score-pos-2{
+    background-color: silver;
+}
+.score-pos-3{
+    background-color: #CD7F32;
+}

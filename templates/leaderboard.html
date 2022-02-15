@@ -4,32 +4,82 @@
 {% endblock %}
 {% block content %}
 <h1>This is the Leaderboard"</h1>
-<table class="table">
-    <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">User</th>
-          <th scope="col">Score</th>
-          
-        </tr>
-      </thead>
-      <tbody>
-{% for user in leaderboard %}
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">User</th>
+                    <th scope="col">Score</th>
 
-   
-      <tr>
-        <th scope="row">{{loop.index}}</th>
-        <td> {{ user.username }}</td>
-        <td>{{user.score }}</td>
-        
-      </tr>
-      
-   
- 
-{% endfor %}
-</tbody>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in leaderboard %}
 
-</table>
+
+                <tr {% if loop.index < 4 %}class="score-pos-{{ loop.index}}"{% endif %}</tr>
+                    <th scope="row">{{loop.index}}</th>
+                    <td> {{ user.username }}</td>
+                    <td>{{ user.score }}</td>
+
+                </tr>
+
+
+
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<div class="row">
+   
+    <div class="col-xs-12 col-6">
+        <h3>How do the scores work?</h3>
+        <p>Currently the highscore is only based on a basic point system, future iterations will have a more
+            sophisticated system but for the moment, here is how the scoring will work.</p>
+    </div>
+    <div class="col-xs-12 col-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Attemps</th>
+                    <th scope="col">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                    <td>1 - 3 </td>
+                    <td>5</td>
+
+                </tr>
+                <tr>
+
+                    <td>4</td>
+                    <td>3</td>
+
+                </tr>
+                <tr>
+
+                    <td>5</td>
+                    <td>2</td>
+
+                </tr>
+                <tr>
+
+                    <td>6</td>
+                    <td>1</td>
+
+                </tr>
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
 {% endblock %}
 
 
