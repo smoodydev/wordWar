@@ -29,9 +29,13 @@
 
     <!-- Modal -->
     <div class="container">
+        {% if "user" not in session %}
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
             Login or Sign-Up
         </button>
+        {% else %}
+        <a class="btn btn-primary" href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
 
     </div>
 
@@ -58,7 +62,7 @@
                             <label for="password1">Password:</label>
                             <input class="col-sm-12" id="password" name="password" type="password" class="validate">
                         </div>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary">Try Login</button>
                     </form>
                 </div>
                 <div class="modal-footer">

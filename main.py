@@ -2,7 +2,7 @@ import os
 import bcrypt
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
-from flask import Flask, session, jsonify, render_template, request
+from flask import Flask, session, jsonify, render_template, request, redirect, url_for
 from game_tools import word_new, is_valid_word, try_solve
 if os.path.exists("env.py"):
     import env
@@ -19,12 +19,19 @@ mongo = PyMongo(app)
 # ROUTE
 @app.route('/')
 def index():
+    x = 5
+    print(5 if x <= 3 else 7-x)
     # session["attempts"] = []
-    if "word" not in session:
+    if "user" in session:
+        print("Shit")
+    else:
+        print("Nahh")
+    print(session["attempts"])
+    if all([key in session for key in ["word","letters", "attempts"]]):
+        print("Something")
+    else:
         session["word"] = word_new(5)
-    if "letters" not in session:
         session["letters"] = 5
-    if "attempts" not in session:
         session["attempts"] = []
 
     print(session["attempts"])
@@ -38,7 +45,6 @@ def try_word():
         if is_valid_word(word, session["letters"]): 
             result = try_solve(session["word"], word)
             if 'attempts' in session:
-                print(session["attempts"], "blah")
                 attempts = session.get("attempts")
                 attempts.append([word, result])
                 session["attempts"] = attempts
@@ -47,6 +53,14 @@ def try_word():
                     session["complete"] = True
             else:
                 session["attempts"] = [word]
+            if "user" in session:
+                updating = {"word":session["word"], "current_attempts": session["attempts"]}
+                mongo.db.useraccount.update_one({"username": session["user"]}, {"$set" : updating})
+                if "complete" in session:
+                    score = len(session["attempts"])
+                    mongo.db.useraccount.update_one({"username": session["user"]},{"$inc": {"score": 5 if score <= 3 else 7-score}})
+            
+            print(session["word"])
             return jsonify(validated=True, result=result, text_back=text_back)
         else:
             return jsonify(validated=False, text_back="Not a Valid Word")
@@ -56,10 +70,26 @@ def try_word():
 
 @app.route('/new_word', methods=["POST"])
 def new_word():
-    session["word"] = word_new(5)
+    # if "user" in session:
+    #     updating = { "$inc": {"num_words": 1}}
+    #     mongo.db.useraccount.update_one({"username": session["user"]}, updating)
+    new_word = word_new(5)
     session["letters"] = 5
+    if "user" in session:
+        # updating = { "$inc": {"num_words": 1, "num_attempts": len(session["attempts"])}}
+        user = mongo.db.useraccount.find_one({"username": session["user"]})
+        updating = {"$set" : { 
+            "num_attempts" : user.get("num_attempts", 0) + len(session["attempts"]),
+            "num_words": user.get("num_words", 0) + 1,
+            "word": new_word,
+            "current_attempts": []
+        }}
+        mongo.db.useraccount.update_one({"username": session["user"]}, updating)
     session["attempts"] = []
-    session.pop("complete")
+    session["word"] = new_word
+    session["letters"] = 5
+    if "complete" in session:
+        session.pop("complete")
     return jsonify(result="Success")
 
 
@@ -79,18 +109,29 @@ def sign_up():
 
 @app.route('/login', methods=['POST'])
 def login():
-
     unhashed_pwd = request.form.get('password').encode('utf-8')
     this_user = request.form.get('username')
-    if mongo.db.useraccount.find({"username": this_user}):
-        hashed_pwd = mongo.db.useraccount.find_one({"username": this_user})["password"]
-        print(unhashed_pwd, hashed_pwd)
+    user = mongo.db.useraccount.find_one({"username": this_user})
+    if user:
+        hashed_pwd = user["password"]
         if bcrypt.checkpw(unhashed_pwd, hashed_pwd):
-            return "Can Log In"
+            session["user"] = user["username"]
+            session["word"] = user.get("word", word_new(5))
+            session["letters"] = user.get("letters", 5)
+            session["attempts"] = user.get("attempts", [])
+            return redirect(url_for('index'))
         else:
             return "Account Found but Wrong Hash/PWD"
     else:
         return "No Account Found"
+
+@app.route('/logout')
+def logout():
+    if "user" in session:
+        session.pop("user")
+        
+    return redirect(url_for('index'))
+
 
 
 
