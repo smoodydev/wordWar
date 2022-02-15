@@ -18,14 +18,11 @@ mongo = PyMongo(app)
 
 # ROUTE
 @app.route('/')
-def index():
-    
+def index(): 
     if not all([key in session for key in ["word","letters", "attempts"]]):
         session["word"] = word_new(5)
         session["letters"] = 5
         session["attempts"] = []
-
-
     return render_template("index.html", attempts=session["attempts"])
     
 
@@ -92,9 +89,10 @@ def sign_up():
         if fields["password1"] == fields["password2"]:
             hashing_password = request.form.get('password1').encode('utf-8')
             fields['password'] = bcrypt.hashpw(hashing_password, bcrypt.gensalt())
+
             [fields.pop(key) for key in ['password1', 'password2']]
-        
-        mongo.db.useraccount.insert_one(fields)
+            fields["score"] = 0
+            mongo.db.useraccount.insert_one(fields)
     return render_template('sign_up.html')
 
 
@@ -122,6 +120,13 @@ def logout():
         session.pop("user")
         
     return redirect(url_for('index'))
+
+
+@app.route('/leaderboard')
+def leaderboard():
+    top_scores = mongo.db.useraccount.find().sort("score", 1)
+    
+    return render_template("leaderboard.html", leaderboard=top_scores)
 
 
 
